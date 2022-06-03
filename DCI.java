@@ -101,10 +101,10 @@ public class DCI  {
 	  참고 사이트 : https://okky.kr/article/1048258?note=2520718
 	*/
 	public SqlSession getInstance() throws IOException  { 
-		String resource = "egovimj/sqlmap/dbconfig/dmail-mapper-config.xml";
+		//이걸 외부 경로로 주시면 외부에서 세팅만 하시면 mapper 연결 
+		String resource = "resource/sqlmap/dbconfig/env-mapper-config.xml";
 		Reader reader = null;
 		SqlSession session = null;
-		try {
 			reader = Resources.getResourceAsReader(resource);
 			SqlSessionFactoryBuilder sfb = new SqlSessionFactoryBuilder();
 			TransactionFactory tran = new JdbcTransactionFactory();
@@ -114,25 +114,9 @@ public class DCI  {
 			conf.setEnvironment(env);
 			
 			SqlSessionFactory ssf = sfb.build(conf);
-			if(ssf == null) {
-				SimpleLogWriter.write(LogName, ClassName, "getInstance", "ConnectFailed : %s : %s", "SqlSessionFactory : " ,ssf);
-			}
 			session = ssf.openSession();
-			
-			return session;
-		} catch (IOException e) {
-			SimpleLogWriter.write(LogName, ClassName, "getInstance", "Resource Not Found : %s : %s", resource , e.getMessage());
-			return null;
-		} catch (Exception e){
-			SimpleLogWriter.write(LogName, ClassName, "getInstance", "Mapper Not Open : %s : %s", "SqlSession", e.getMessage());
-			return null;
-		}finally {
-			if(reader != null) {
-				reader.close();
-				reader = null;
-			}
-		}
-		
+			reader.close();
+			return session;	
 	}
 	/*
 	  UI단 환경설정 database설정에서 연결로 체크할려고 만든 메서드
@@ -163,8 +147,8 @@ public class DCI  {
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		factory.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		factory.setJpaProperties(jpapropProperties());
-		factory.setPersistenceUnitName("imj3_egov");
-		factory.setPackagesToScan("egovimj.*");
+		factory.setPersistenceUnitName("test");
+		factory.setPackagesToScan("base.*");
 		factory.setDataSource(envDBConn());
 		factory.afterPropertiesSet();
 		return factory.getObject();
@@ -194,8 +178,8 @@ public class DCI  {
 			dialectKey = "extdb1";
 		}else if(dataTable.get("vendor").equals("extDB2")) {
 			dialectKey = "extdb2";
-		}else {
-			SimpleLogWriter.write(LogName, ClassName, "envJPASetting", "DialectError : %s : %s", dialect.getProperty(dataTable.get("vendor")) , "NULL");
+		}else{
+			System.out.println("해당 db에 관한 dialect가 없습니다");
 		}
 		//db 방언설정
 		prop.put("hibernate.dialect", dialect.getProperty(dialectKey));
