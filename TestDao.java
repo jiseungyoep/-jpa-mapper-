@@ -37,7 +37,7 @@ public class DmailDao extends EgovAbstractMapper {
 	DCI dci = new DCI();
 	
 	@Transactional(readOnly = true)
-	public List<DmailVO> selectDmailList(@Param("tableName")String tableName, HashMap<String, String>dbMap ) throws Exception{
+	public List<TestVO> selectList(@Param("tableName")String tableName, HashMap<String, String>dbMap ) throws Exception{
 		
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("tableName", tableName);
@@ -60,10 +60,10 @@ public class DmailDao extends EgovAbstractMapper {
     //mybatis 테스트 부분
 		session = dci.getInstance();
 		System.out.println(session);
-		List<DmailVO> selectDmailList = session.selectList("selectDmailList", map);
+		List<TestVO> selectList = session.selectList("selectList", map);
 		session.close();
     //mybaits 테스트 부분
-		return selectDmailList;
+		return selectList;
 	}
 
 }
