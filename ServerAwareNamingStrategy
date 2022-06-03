@@ -1,0 +1,55 @@
+package 사용하실 패키지;
+
+
+import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+
+
+/*
+  jpa 물리 네이밍 전략
+  ibatis(mybatis)는 쿼리 대 db 연결 맵핑 방식이라면
+  jpa는 객체 대 db 연결 맵핑 방식 
+  하지만 jpa 단점으로는 @table(name="테이블이름")이런 식으로 한 객체가 한 테이블에만 
+  맵핑이 된다. (아무리 컬럼이 똑같다고 해도) 
+  그걸 PhysicalNamingStrategyStander라는 친구가 @table(name="테이블이름")
+  작동 전 테이블 이름을 가지고 와서 수정해줌
+*/
+public class ServerAwareNamingStrategy extends PhysicalNamingStrategyStandardImpl {
+
+	private static final long serialVersionUID = 1L;
+	private static String tableName;
+	 
+    
+    @Override
+    public Identifier toPhysicalTableName(final Identifier identifier, final JdbcEnvironment jdbcEnv) {
+        if (identifier == null) {
+            return null;
+        }
+        
+        final String newName = identifier.getText() + tableName;
+        return Identifier.toIdentifier(newName);
+    }
+    
+	public String getTableName() {
+		return tableName;
+	}
+	
+	/*
+	  앞에서 Controller에서 넘겨준 tableName을 Dao쪽에서 받은 뒤 
+	  @table(name="테이블 이름") 뒤에 _0 이런걸 넣기 위해 가공하는 곳
+	  각 dmail_info, dmail_result, dmail_result_click, dmail_result_site
+	  가 들어오면 각 맞게 뒤에 _0 여기를 짤라서 위 상속받은 메서드에 던져줌..	
+	*/
+	@SuppressWarnings("static-access")
+	public void setTableName(String tableName) {
+		String[] replacetable = null;
+	  String cut = "테이블 이름을 받으면 무슨 기준으로 짜른거지";
+		
+		if(tableName.contains("cut")) {
+			replacetable = tableName.split("cut");
+		}
+		
+		this.tableName = replacetable[1]; 		
+	}
+}	
