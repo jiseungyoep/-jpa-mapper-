@@ -1,4 +1,4 @@
-package egovimj.util.db;
+package 사용하실 패키지;
 
 import java.io.IOException;
 import java.io.Reader;
